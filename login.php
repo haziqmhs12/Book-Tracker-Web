@@ -53,9 +53,10 @@ if (isset($_POST['login'])) {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['id'] = $id;
                 $_SESSION['username'] = $username;
+                $_SESSION['user'] = $username;
 
                 // Redirect to the user's dashboard
-                header("Location: ../dashboard");
+                header("Location: Search.php");
                 exit;
             } else {
                 $_SESSION['error'] = "Incorrect Username or password!";
@@ -120,7 +121,7 @@ if (isset($_SESSION['error'])) {
             <?php endif; ?>
             <div class="mb-3">
                 <label for="username" class="form-label">Username:</label>
-                <input id="username" name="username" class="form-control" placeholder="name@example.com" required type="text" />
+                <input id="username" name="username" class="form-control" placeholder="username" required type="text" />
             </div>
             <div class="mb-3">
                 <label for="password" class="mb-3" class="form-label">Password:</label>
