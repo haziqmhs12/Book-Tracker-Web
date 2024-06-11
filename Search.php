@@ -121,10 +121,12 @@ if (!isset($_SESSION['user'])) {
             <div class="loading">
                 <p class="text-center">Loading... this may take a moment.</p>
             </div>
-            <div class="search-output">
+            <div class="search-output mb-6">
                 <h2 id="top_results">- Top Results -</h2>
                 <pre></pre>
+                <button class="btn btn-outline-success mb-5" onclick="fetchBook()">Next</button>
             </div>
+            
 
         </div>
     </main>
