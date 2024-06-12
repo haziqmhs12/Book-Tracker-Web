@@ -25,11 +25,17 @@ if (!isset($_SESSION['user'])) {
         }
 
         .search-output,
-        .loading {
+        .loading,
+        #top_results {
             opacity: 0;
             transition: 0.3s ease-in-out;
             overflow: hidden;
+        }
 
+        .Prevbutton,
+        .Nextbutton {
+            opacity: 0;
+            display: disabled;
         }
 
         .card-title {
@@ -45,6 +51,22 @@ if (!isset($_SESSION['user'])) {
 
         .carousel-item {
             height: 32rem;
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 300px;
+            /* Set a fixed height */
+            object-fit: cover;
+            /* Ensures the image covers the element without stretching */
+            object-fit: fill;
+        }
+
+        p {
+            word-wrap: break-word;
+            /* Ensures long words break to the next line */
+            white-space: normal;
+            /* Ensures normal wrapping of text */
         }
     </style>
 </head>
@@ -73,10 +95,10 @@ if (!isset($_SESSION['user'])) {
                         <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                     </li>
                 </ul>
-                <form class="d-flex" role="search">
+                <!-- <form class="d-flex" role="search">
                     <input class="form-control me-2" id="title" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success fetchBtn" type="submit">Search</button>
-                </form>
+                </form> -->
             </div>
         </div>
     </nav>
@@ -117,18 +139,40 @@ if (!isset($_SESSION['user'])) {
 
         </div>
 
-        <div class="container mt-6">
-            <div class="loading">
-                <p class="text-center">Loading... this may take a moment.</p>
+
+        <div class="container mt-5">
+            <h2 class="text-center">- Find Book by Title -</h2>
+
+            <div class="mb-3 ">
+                <form class="d-flex flex-column ">
+                    <label for="title" class="form-label">Book Title</label>
+                    <input type="search" class="form-control me-2 mb-3" id="title" aria-label="Search">
+                    <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+                    <button class="btn btn-outline-success fetchBtn" type="submit">Search</button>
+                </form>
             </div>
-            <div class="search-output mb-6">
-                <h2 id="top_results">- Top Results -</h2>
-                <pre></pre>
-                <button class="btn btn-outline-success mb-5" onclick="fetchBook()">Next</button>
-            </div>
-            
 
         </div>
+
+
+
+
+        <!-- <div class="container mt-6"> -->
+        <div class="loading">
+            <p class="text-center">Loading... this may take a moment.</p>
+        </div>
+        <h2 id="top_results" class="text-center">- Search Results -</h2>
+        <div class="search-output ">
+            <pre class="row row-cols-1 row-cols-md-4 g-5 mt-3 mx-5 "></pre>
+        </div>
+        <div class="d-flex justify-content-center mb-5">
+            <button class="Prevbutton btn btn-outline-success me-5" onclick="prev()">prev</button>
+            <button class="Nextbutton btn btn-outline-success ms-5" onclick="next()">Next</button>
+
+        </div>
+
+
+        <!-- </div> -->
     </main>
 
 
