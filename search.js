@@ -119,15 +119,21 @@ function fetchBook() {
             // let title = data.docs[i].title;
             let author = data.docs[i].author_name;
 
+            let value = data.docs[i].isbn ? data.docs[i].isbn[0] : '';
+
             // Attempt to fetch cover image
             try {
-              let value = data.docs[i].isbn[0];
+              // let value = data.docs[i].isbn[0];
+              
 
               let imageUrl =
                 "https://covers.openlibrary.org/b/isbn/" + value + "-M.jpg";
               // div1.innerHTML = "<img src ='" + imageUrl
               //     + "' class='card-img-top img-fluid img-thumbnail' id='cover'>";
               img.src = imageUrl;
+              
+              img.setAttribute('data-original-src', "icons/avatar_book-sm.png");
+              img.setAttribute('data-isbn', value); // Store ISBN
 
               fetch(imageUrl)
                 .then((response) => response.blob())
@@ -140,6 +146,7 @@ function fetchBook() {
                     const imgUrl = URL.createObjectURL(blob);
                     // div1.innerHTML = "<img src='" + imgUrl + "' class='card-img-top img-fluid img-thumbnail' id='cover' >";
                     img.src = imgUrl;
+                    img.setAttribute('data-original-src', imageUrl); // Store original URL
                   }
                 })
                 .catch(() => {
@@ -158,6 +165,13 @@ function fetchBook() {
             // h5.innerHTML = title;
             h5.innerText = title;
             add.innerText = "Add to Database";
+
+            // Check localStorage to see if this item was added before
+            const bookKey = `${title}-${value}`;
+                    if (localStorage.getItem(bookKey)) {
+                        add.disabled = true;
+                        add.innerText = "Added";
+                    }
 
             div.appendChild(div1);
             div1.appendChild(img);
@@ -189,6 +203,66 @@ function fetchBook() {
       });
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Delegate the click event handling to the parent element
+  document.querySelector('.search-output').addEventListener('click', function(event) {
+      // Check if the clicked element matches the .insert-button selector
+      if (event.target && event.target.matches('.insert-button')) {
+
+          // Disable the button to prevent multiple submissions
+        const addButton = event.target;  // Get the clicked button
+        
+        // Store the state in localStorage
+        // const titles = addButton.closest('.card').querySelector('.card-title').innerText;
+        // localStorage.setItem(titles, true);
+          
+          addButton.disabled = true;
+          addButton.innerText = "Added";
+          // Retrieve data from the clicked card
+          const card = event.target.closest('.card');
+          const title = card.querySelector('.card-title').innerText;
+          const authors = card.querySelector('.card-text').innerText;
+        const imageSrc = card.querySelector('.card-img-top').getAttribute('data-original-src');
+        const isbn = card.querySelector('.card-img-top').getAttribute('data-isbn');
+
+        const key = `${title}-${isbn}`;
+            localStorage.setItem(key, true);
+
+          // Create an object with the data
+          const data = {
+              title: title,
+              authors: authors,
+              imageSrc: imageSrc,
+              userID: userID
+          };
+
+          // Send the data to the PHP script using fetch
+          fetch('insert.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+          })
+          .then(response => {
+              if (response.ok) {
+                  alert('Data added to database successfully!');
+              } else {
+                  alert('Failed to add data to database.');
+              }
+          })
+            .catch(error => {
+              console.error('Error:', error)
+              // Enable the button and reset text in case of an error
+              addButton.disabled = false;
+              addButton.innerText = "Add to Database";
+              // Remove the state from localStorage
+              localStorage.removeItem(key);
+            });
+      }
+  });
+});
 
 // list
 

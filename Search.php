@@ -180,3 +180,50 @@ if (!isset($_SESSION['user'])) {
 
 </html>
 <script src="search.js"></script>
+<script>
+    // Store PHP session ID in a JavaScript variable
+    const userID = <?php echo isset($_SESSION['id']) ? $_SESSION['id'] : 'null'; ?>;
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // Delegate the click event handling to the parent element
+    //     document.querySelector('.search-output').addEventListener('click', function(event) {
+    //         // Check if the clicked element matches the .insert-button selector
+    //         if (event.target && event.target.matches('.insert-button')) {
+
+    //             // Disable the button to prevent multiple submissions
+                
+    //             addButton.disabled = true;
+    //             addButton.innerText = "Added";
+    //             // Retrieve data from the clicked card
+    //             const card = event.target.closest('.card');
+    //             const title = card.querySelector('.card-title').innerText;
+    //             const authors = card.querySelector('.card-text').innerText;
+    //             const imageSrc = card.querySelector('.card-img-top').getAttribute('data-original-src');
+
+    //             // Create an object with the data
+    //             const data = {
+    //                 title: title,
+    //                 authors: authors,
+    //                 imageSrc: imageSrc
+    //             };
+
+    //             // Send the data to the PHP script using fetch
+    //             fetch('insert.php', {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify(data)
+    //             })
+    //             .then(response => {
+    //                 if (response.ok) {
+    //                     alert('Data added to database successfully!');
+    //                 } else {
+    //                     alert('Failed to add data to database.');
+    //                 }
+    //             })
+    //             .catch(error => console.error('Error:', error));
+    //         }
+    //     });
+    // });
+</script>
+ 
