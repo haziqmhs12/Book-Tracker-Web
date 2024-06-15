@@ -21,9 +21,12 @@ CREATE TABLE user_books (
     id INT AUTO_INCREMENT PRIMARY KEY,
     book_id INT NOT NULL,
     user_id INT NOT NULL,
+    summary TEXT,
+    rating INT,
     FOREIGN KEY (book_id) REFERENCES books(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     UNIQUE KEY unique_user_book (book_id, user_id)
+);
 );
 
 ```
