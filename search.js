@@ -91,6 +91,7 @@ function fetchBook() {
             const img = document.createElement("img");
             const p = document.createElement("p");
             const add = document.createElement("button");
+            
             // const p1 = document.createElement("p");
             // div.className = "col-md-4";
             // divc.className = "col-md-8";
@@ -107,6 +108,7 @@ function fetchBook() {
             add.className = "mt-auto btn btn-primary insert-button";
             img.className = "card-img-top img-fluid img-thumbnail";
             div1.style.maxWidth = "20rem";
+            
 
             //Result:
             //<div class="example-class another-class"></div>
@@ -134,6 +136,9 @@ function fetchBook() {
               
               img.setAttribute('data-original-src', "icons/avatar_book-sm.png");
               img.setAttribute('data-isbn', value); // Store ISBN
+              add.setAttribute('data-bs-target', "#staticBackdrop1");
+              add.setAttribute('data-bs-toggle', "modal");
+              
 
               fetch(imageUrl)
                 .then((response) => response.blob())
@@ -161,10 +166,13 @@ function fetchBook() {
             if (author !== undefined) {
               p.innerText = author;
             }
+           
 
             // h5.innerHTML = title;
             h5.innerText = title;
-            add.innerText = "Add to Database";
+            add.innerText = "Read";
+            
+            
 
             // Check localStorage to see if this item was added before
             const bookKey = `${title}-${value}`;
@@ -205,35 +213,56 @@ function fetchBook() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  let title, authors, imageSrc, isbn, summary, rating; // Declare variables in a wider scope
+  let addButton;
+  
   // Delegate the click event handling to the parent element
   document.querySelector('.search-output').addEventListener('click', function(event) {
       // Check if the clicked element matches the .insert-button selector
-      if (event.target && event.target.matches('.insert-button')) {
-
-          // Disable the button to prevent multiple submissions
-        const addButton = event.target;  // Get the clicked button
-        
-        // Store the state in localStorage
-        // const titles = addButton.closest('.card').querySelector('.card-title').innerText;
-        // localStorage.setItem(titles, true);
+    if (event.target && event.target.matches('.insert-button')) {
+      
+      // Disable the button to prevent multiple submissions
+      addButton = event.target;  // Get the clicked button
+      ;
+      // Store the state in localStorage
+      // const titles = addButton.closest('.card').querySelector('.card-title').innerText;
+      // localStorage.setItem(titles, true);
           
-          addButton.disabled = true;
-          addButton.innerText = "Added";
-          // Retrieve data from the clicked card
-          const card = event.target.closest('.card');
-          const title = card.querySelector('.card-title').innerText;
-          const authors = card.querySelector('.card-text').innerText;
-        const imageSrc = card.querySelector('.card-img-top').getAttribute('data-original-src');
-        const isbn = card.querySelector('.card-img-top').getAttribute('data-isbn');
+      
+      // Retrieve data from the clicked card
+      const card = event.target.closest('.card');
+      title = card.querySelector('.card-title').innerText;
+      authors = card.querySelector('.card-text').innerText;
+      imageSrc = card.querySelector('.card-img-top').getAttribute('data-original-src');
+      isbn = card.querySelector('.card-img-top').getAttribute('data-isbn');
+    }
+
+    if (event.target && event.target.matches('.descButton')) {
+      
+          const form = document.getElementById('bookForm'); // Assuming your form has an ID 'bookForm'
+        if (form) {
+          // Populate the hidden inputs in the modal form
+          document.getElementById('bookTitle').value = title;
+          document.getElementById('bookAuthors').value = authors;
+          document.getElementById('bookImageSrc').value = imageSrc;
+          document.getElementById('bookIsbn').value = isbn;
+        
+        
+          // Access input values directly
+        summary = document.getElementById('summary').value; // Access input with id 'summary'
+        rating = document.getElementById('rating').value;   // Access input with id 'rating'
+        }
 
         const key = `${title}-${isbn}`;
-            localStorage.setItem(key, true);
+            
 
           // Create an object with the data
           const data = {
               title: title,
               authors: authors,
-              imageSrc: imageSrc,
+            imageSrc: imageSrc,
+            summary: summary,
+              rating : rating,
               userID: userID
           };
 
@@ -246,17 +275,24 @@ document.addEventListener('DOMContentLoaded', function() {
               body: JSON.stringify(data)
           })
           .then(response => {
-              if (response.ok) {
+            if (response.ok) {
+              localStorage.setItem(key, true);
+              addButton.disabled = true;
+      addButton.innerText = "Added"
                   alert('Data added to database successfully!');
               } else {
-                  alert('Failed to add data to database.');
+                localStorage.removeItem(key);
+                addButton.disabled = false;
+                addButton.innerText = "Read";
+                alert('Failed to add data to database.');
+                
               }
           })
             .catch(error => {
               console.error('Error:', error)
               // Enable the button and reset text in case of an error
               addButton.disabled = false;
-              addButton.innerText = "Add to Database";
+              addButton.innerText = "Read";
               // Remove the state from localStorage
               localStorage.removeItem(key);
             });

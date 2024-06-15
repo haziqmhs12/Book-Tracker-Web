@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 // Start the session
 session_start();
@@ -10,7 +10,7 @@ session_start();
 $data = json_decode(file_get_contents('php://input'), true);
 
 // Validate the received data
-if (empty($data['title']) || empty($data['authors']) || empty($data['imageSrc']) || empty($data['userID'])) {
+if (empty($data['title']) || empty($data['authors']) || empty($data['imageSrc']) || empty($data['summary']) || empty($data['rating']) || empty($data['userID'])) {
     echo json_encode(array('error' => 'Invalid input data'));
     exit();
 }
@@ -46,8 +46,8 @@ if ($stmt_check->num_rows > 0) {
 }
 
 // Insert into user_books table
-$stmt_insert_user_book = $conn->prepare("INSERT INTO user_books (book_id, user_id) VALUES (?, ?)");
-$stmt_insert_user_book->bind_param("ii", $bookId, $data['userID']);
+$stmt_insert_user_book = $conn->prepare("INSERT INTO user_books (summary,rating,book_id, user_id) VALUES (?,?,?, ?)");
+$stmt_insert_user_book->bind_param("siii",$data['summary'] ,$data['rating'] ,$bookId, $data['userID']);
 
 if ($stmt_insert_user_book->execute()) {
     echo json_encode(array('message' => 'Data added successfully'));

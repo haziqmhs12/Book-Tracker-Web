@@ -13,9 +13,7 @@ if (!isset($_SESSION['user'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    
     <meta charset="UTF-8">
     <title>Search</title>
     <style>
@@ -72,6 +70,9 @@ if (!isset($_SESSION['user'])) {
 </head>
 
 <body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 px-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Book</a>
@@ -164,6 +165,44 @@ if (!isset($_SESSION['user'])) {
         <h2 id="top_results" class="text-center">- Search Results -</h2>
         <div class="search-output ">
             <pre class="row row-cols-1 row-cols-md-4 g-5 mt-3 mx-5 "></pre>
+
+            <!-- Modal -->
+<div class="modal fade" id="staticBackdrop1" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog d-flex justify-content-center">
+        <div class="modal-content w-75">
+            <div class="modal-header  bg-dark">
+                <h5 class="modal-title" id="exampleModalLabel1">Feedback</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-dark">
+                <div id="bookForm">
+    
+                    <input type="hidden" id="bookTitle" name="title">
+                    <input type="hidden" id="bookAuthors" name="authors">
+                    <input type="hidden" id="bookImageSrc" name="imageSrc">
+                    <input type="hidden" id="bookIsbn" name="isbn">
+                    <!-- Email input -->
+                    <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="summary">Summary</label>
+                        <input type="text" id="summary" class="form-control" />
+                        
+                    </div>
+
+                    <!-- password input -->
+                    <div data-mdb-input-init class="form-outline mb-4">
+                        <label class="form-label" for="rating">Rating</label>
+                        <input type="number" id="rating" class="form-control" min= "0" max="5"  />
+                       
+                    </div>
+
+                    <!-- Submit button -->
+                    <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block descButton">Add</button>
+                </>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
         </div>
         <div class="d-flex justify-content-center mb-5">
             <button class="Prevbutton btn btn-outline-success me-5" onclick="prev()">prev</button>
