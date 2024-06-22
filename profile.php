@@ -43,7 +43,9 @@ if ($result_count_books_read->num_rows > 0) {
     $books_read = 0;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_book'])) {
     // Handle the delete book request
     $book_id = $_POST['book_id'];
     $user_id = $_SESSION['id'];
@@ -62,6 +64,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
     exit(); // Exit to prevent the rest of the page from loading
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating']) && isset($_POST['book_id'])) {
+    $rating = $_POST['rating'];
+    $book_id = $_POST['book_id'];
+    $user_id = $_SESSION['id'];
+
+    // Check if summary is provided
+    if (isset($_POST['summary'])) {
+        $summary = $_POST['summary'];
+        // Prepared statement to update both summary and rating
+        $stmt = $mysqli->prepare("UPDATE user_books SET summary = ?, rating = ? WHERE book_id = ? AND user_id = ?");
+        $stmt->bind_param("siii", $summary, $rating, $book_id, $user_id);
+    } else {
+        // Prepared statement to update only rating
+        $stmt = $mysqli->prepare("UPDATE user_books SET rating = ? WHERE book_id = ? AND user_id = ?");
+        $stmt->bind_param("iii", $rating, $book_id, $user_id);
+    }
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => $stmt->error]);
+    }
+
+    $stmt->close();
+    exit(); // Exit to prevent the rest of the page from loading
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
         body {
             background-color: #212529;
             color: white;
-            
+
         }
 
         .col {
@@ -112,14 +142,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
             white-space: normal;
             /* Ensures normal wrapping of text */
         }
+
         .checked {
             color: orange;
         }
+
         .dropdown-menu {
-        min-width: 150px; /* Adjust width as needed */
-        /* Add any additional styling */
-    }
-</style>
+            min-width: 150px;
+            /* Adjust width as needed */
+            /* Add any additional styling */
+        }
+    </style>
     </style>
 </head>
 
@@ -173,11 +206,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
                                         <p class="text-secondary mb-1">Username :<?php echo $username; ?> </p>
                                         <p class="text-muted font-size-sm">Email: <?php echo $email; ?></p>
                                         <p class="text-muted font-size-sm">Member Since:
-                                            <?php echo date('F j, Y', strtotime($created_at)); ?></p>
+                                            <?php echo date('F j, Y', strtotime($created_at)); ?>
+                                        </p>
                                         <p class="text-muted font-size-sm">Number of book read:
-                                            <?php echo $books_read; ?></p>
+                                            <?php echo $books_read; ?>
+                                        </p>
                                         <!-- <button class="btn btn-primary">Follow</button>
                                         <button class="btn btn-outline-primary">Message</button> -->
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
                             <?php include 'fetch_books.php'; ?>
                         </div>
                     </div>
-                    <!-- Modal -->
+                    <!-- delete Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -202,8 +238,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
                                     Do you want to delete the book? serious
                                 </div>
                                 <div class="modal-footer  bg-dark">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" id="confirmDeleteButton">Delete</button>
+                                    <button type="button" class="btn btn-secondary btn-outline-light" onclick= "$('#exampleModal').modal('hide');" >Close</button>
+                                    <button type="button" class="btn btn-danger"
+                                        id="confirmDeleteButton">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- edit modal -->
+                    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editmodal" aria-hidden="true">
+                        <div class="modal-dialog modal-lg d-flex justify-content-center">
+                            <div class="modal-content w-75">
+                                <div class="modal-header  bg-dark">
+                                    <h5 class="modal-title" id="edittitle">Edit Feedback</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 bg-dark">
+                                    <div id="bookForm">
+                                        <!-- Email input -->
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <label class="form-label" for="summary">Summary</label>
+                                            <input type="text" id="summary" class="form-control"  />
+
+                                        </div>
+
+                                        <!-- password input -->
+                                        <div data-mdb-input-init class="form-outline mb-4">
+                                            <label class="form-label" for="rating">Rating</label>
+                                            <input type="number" id="rating" class="form-control" min="0" max="5"/>
+
+                                        </div>
+
+                                        <!-- Submit button -->
+                                        <button type="submit" data-mdb-button-init data-mdb-ripple-init
+                                            class="btn btn-primary btn-block descButton">Save</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +283,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
     </main>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 <script>
     const bookList = document.getElementById('bookList');
 
@@ -230,33 +301,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
 
     // Function to handle delete book AJAX request
     let bookIdToDelete;
+    let bookIdToEdit;
 
-        $(document).on('click', '.delete-book', function() {
-            bookIdToDelete = $(this).data('bookid');
-            $('#deleteModal').modal('show');
-        });
+    $(document).on('click', '.delete-book', function () {
+        bookIdToDelete = $(this).data('bookid');
+        $('#deleteModal').modal('show');
+    });
 
-        $('#confirmDeleteButton').on('click', function() {
-            $.ajax({
-                type: 'POST',
-                url: 'profile.php',
-                data: { book_id: bookIdToDelete },
-                success: function(response) {
-            try {
-                let jsonResponse = JSON.parse(response);
-                if (jsonResponse.success) {
-                    location.reload();
-                } else {
-                    alert('Error deleting book: ' + (jsonResponse.message || 'Unknown error'));
+    $('#confirmDeleteButton').on('click', function () {
+        $.ajax({
+            type: 'POST',
+            url: 'profile.php',
+            data: { delete_book: true, book_id: bookIdToDelete },
+            success: function (response) {
+                try {
+                    let jsonResponse = JSON.parse(response);
+                    if (jsonResponse.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting book: ' + (jsonResponse.message || 'Unknown error'));
+                    }
+                } catch (e) {
+                    alert('Error parsing response: ' + e.message);
                 }
-            } catch (e) {
-                alert('Error parsing response: ' + e.message);
+            },
+            error: function () {
+                alert('An error occurred while deleting the book.');
             }
-        },
-                error: function() {
-                    alert('An error occurred while deleting the book.');
-                }
-            });
         });
+    });
+
+    // $(document).on('click', '.edit-book', function () {
+    //     bookIdToEdit = $(this).data('bookid');
+    //     $('#deleteModal').modal('show');
+    // });
+
+    $(document).on('click', '.edit-book', function () {
+        bookIdToEdit = $(this).data('bookid'); // Get the book ID from the data attribute
+        $('#editModal').modal('show'); // Show the edit modal
+    });
+
+    
+
+    $(document).ready(function() {
+    $('.descButton').click(function(e) {
+        e.preventDefault();
+
+        // Gather data from the form
+        var summary = $('#summary').val();
+        var rating = $('#rating').val();
+        //ar book_id = $(this).data('bookid'); // Assuming you have book ID accessible
+        var dataToSend = {
+            rating: rating,
+            book_id: bookIdToEdit
+        };
+
+        if (summary.trim() !== '') {
+            dataToSend.summary = summary;
+        }
+        if (rating > 5) {
+            // If rating is greater than 5, set it back to 5
+            dataToSend.rating = 5;
+        }
+        if (summary.trim() === '' && rating.trim() === '') {
+            alert('Please enter summary or rating.'); // Inform the user to enter data
+            return; // Exit function without sending AJAX request
+        }
+        // AJAX request
+        $.ajax({
+            type: 'POST',
+            url: 'profile.php', // Replace with your server-side script URL
+            data: dataToSend,
+            success: function (response) {
+                try {
+                    let jsonResponse = JSON.parse(response);
+                    if (jsonResponse.success) {
+                        alert('Feedback added successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error updating book: ' + (jsonResponse.message || 'Unknown error'));
+                    }
+                } catch (e) {
+                    alert('Error parsing response: ' + e.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error, show error message
+                alert('Error adding feedback: ' + error);
+            }
+        });
+    });
+});
+
 
 </script>

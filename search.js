@@ -242,17 +242,25 @@ document.addEventListener('DOMContentLoaded', function() {
           const form = document.getElementById('bookForm'); // Assuming your form has an ID 'bookForm'
         if (form) {
           // Populate the hidden inputs in the modal form
-          document.getElementById('bookTitle').value = title;
-          document.getElementById('bookAuthors').value = authors;
-          document.getElementById('bookImageSrc').value = imageSrc;
-          document.getElementById('bookIsbn').value = isbn;
-        
-        
-          // Access input values directly
-        summary = document.getElementById('summary').value; // Access input with id 'summary'
-        rating = document.getElementById('rating').value;   // Access input with id 'rating'
-        }
+          document.getElementById("bookTitle").value = title;
+          document.getElementById("bookAuthors").value = authors;
+          document.getElementById("bookImageSrc").value = imageSrc;
+          document.getElementById("bookIsbn").value = isbn;
 
+          /// Access input values directly
+          summary = document.getElementById("summary").value.trim(); // Trimmed summary value
+          rating = document.getElementById("rating").value.trim(); // Trimmed rating value
+
+          // Check if summary or rating is empty
+          if (summary === '' && rating === '') {
+            alert("Please enter summary or rating.");
+            return; // Exit function if both are empty
+          }
+          if (rating > 5) {
+            rating = 5;
+          }
+        }
+        
         const key = `${title}-${isbn}`;
             
 
@@ -267,35 +275,42 @@ document.addEventListener('DOMContentLoaded', function() {
           };
 
           // Send the data to the PHP script using fetch
-          fetch('insert.php', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
+          fetch("insert.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
           })
-          .then(response => {
-            if (response.ok) {
-              localStorage.setItem(key, true);
-              addButton.disabled = true;
-      addButton.innerText = "Added"
-                  alert('Data added to database successfully!');
-              } else {
-                localStorage.removeItem(key);
-                addButton.disabled = false;
-                addButton.innerText = "Read";
-                alert('Failed to add data to database.');
-                
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to add data to database.");
               }
-          })
-            .catch(error => {
-              console.error('Error:', error)
+              return response.json(); // Parse the JSON response
+            })
+            .then((jsonResponse) => {
+              if (response.status === 400) {
+                throw new Error(jsonResponse.error || "Invalid input data.");
+              } else if (response.status === 500) {
+                throw new Error(
+                  "Internal Server Error: " + jsonResponse.error ||
+                    "Unknown error."
+                );
+              }
+
+              // If no errors, proceed with success handling
+              alert("Data added to database successfully!");
+              addButton.disabled = true;
+              addButton.innerText = "Added";
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Error: " + error.message);
               // Enable the button and reset text in case of an error
               addButton.disabled = false;
               addButton.innerText = "Read";
-              // Remove the state from localStorage
-              localStorage.removeItem(key);
             });
+
       }
   });
 });

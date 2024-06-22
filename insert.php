@@ -11,14 +11,15 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 // Validate the received data
 if (empty($data['title']) || empty($data['authors']) || empty($data['imageSrc']) || empty($data['summary']) || empty($data['rating']) || empty($data['userID'])) {
+    http_response_code(400); // Set HTTP status code to 400 (Bad Request)
     echo json_encode(array('error' => 'Invalid input data'));
-    exit();
+    exit(); // Stop further execution
 }
-
 $conn = new mysqli("localhost", "root", "", "login_system");
 
 // Check connection
 if ($conn->connect_error) {
+    http_response_code(500);
     die(json_encode(array('error' => 'Connection failed: ' . $conn->connect_error)));
 }
 

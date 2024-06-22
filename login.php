@@ -125,7 +125,7 @@ if (isset($_SESSION['error'])) {
             </div>
             <div class="mb-3">
                 <label for="password" class="mb-3" class="form-label">Password:</label>
-                <input id="password" name="password" class="form-control" aria-describedby="passwordHelpBlock" required type="password" />
+                <input id="password" name="password" class="form-control" aria-describedby="passwordHelpBlock" placeholder="password" required type="password" />
                 <div id="passwordHelpBlock" class="form-text text-danger">
                     Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
                 </div>
