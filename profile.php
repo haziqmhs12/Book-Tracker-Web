@@ -42,25 +42,49 @@ if ($result_count_books_read->num_rows > 0) {
 } else {
     $books_read = 0;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
+    // Handle the delete book request
+    $book_id = $_POST['book_id'];
+    $user_id = $_SESSION['id'];
+
+    // Prepared statement to delete the book entry for the user
+    $stmt = $mysqli->prepare("DELETE FROM user_books WHERE book_id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $book_id, $user_id);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => $stmt->error]);
+    }
+
+    $stmt->close();
+    exit(); // Exit to prevent the rest of the page from loading
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Book Tracker Profile</title>
 
     <style>
         body {
             background-color: #212529;
             color: white;
+            
         }
+
         .col {
             background-color: white;
         }
+
         .card-title {
             white-space: normal;
             /* Allows text to wrap */
@@ -88,44 +112,50 @@ if ($result_count_books_read->num_rows > 0) {
             white-space: normal;
             /* Ensures normal wrapping of text */
         }
+        .checked {
+            color: orange;
+        }
+        .dropdown-menu {
+        min-width: 150px; /* Adjust width as needed */
+        /* Add any additional styling */
+    }
+</style>
     </style>
 </head>
+
 <body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
     <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 px-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Book</a>
-            <button class="navbar-toggler collapsed " type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link "  href="Search.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
-                <!-- <form class="d-flex" role="search">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 px-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Book</a>
+                <button class="navbar-toggler collapsed " type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link " href="Search.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                        </li>
+                    </ul>
+                    <!-- <form class="d-flex" role="search">
                     <input class="form-control me-2" id="title" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success fetchBtn" type="submit">Search</button>
                 </form> -->
+                </div>
             </div>
-        </div>
-    </nav>
-</header>
+        </nav>
+    </header>
 
     <main>
         <!-- referecnce: https://www.bootdey.com/snippets/view/profile-with-data-and-skills -->
@@ -136,13 +166,16 @@ if ($result_count_books_read->num_rows > 0) {
                         <div class="card ">
                             <div class="card-body">
                                 <div class="d-flex flex-column align-items-center text-center">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="User" class="rounded-circle" width="150">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="User"
+                                        class="rounded-circle" width="150">
                                     <div class="mt-3">
                                         <h4><?php echo $username; ?></h4>
                                         <p class="text-secondary mb-1">Username :<?php echo $username; ?> </p>
                                         <p class="text-muted font-size-sm">Email: <?php echo $email; ?></p>
-                                        <p class="text-muted font-size-sm">Member Since: <?php echo date('F j, Y', strtotime($created_at)); ?></p>
-                                        <p class="text-muted font-size-sm">Number of book read: <?php echo $books_read; ?></p>
+                                        <p class="text-muted font-size-sm">Member Since:
+                                            <?php echo date('F j, Y', strtotime($created_at)); ?></p>
+                                        <p class="text-muted font-size-sm">Number of book read:
+                                            <?php echo $books_read; ?></p>
                                         <!-- <button class="btn btn-primary">Follow</button>
                                         <button class="btn btn-outline-primary">Message</button> -->
                                     </div>
@@ -152,20 +185,40 @@ if ($result_count_books_read->num_rows > 0) {
                     </div>
                     <div class="col-md-8">
                         <h2 class="font-weight-light text-center">List of books</h2>
-                        <div id="bookList" class="d-flex flex-row flex-nowrap overflow-auto " data-bs-smooth-scroll="true" data-bs-spy="scroll">
+                        <div id="bookList" class="d-flex flex-row flex-nowrap overflow-auto"
+                            data-bs-smooth-scroll="true" data-bs-spy="scroll">
                             <?php include 'fetch_books.php'; ?>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content  w-75">
+                                <div class="modal-header  bg-dark">
+                                    <h5 class="modal-title" id="exampleModalLabel">Delete book</h5>
+                                </div>
+                                <div class="modal-body  bg-dark">
+                                    Do you want to delete the book? serious
+                                </div>
+                                <div class="modal-footer  bg-dark">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="confirmDeleteButton">Delete</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>  
+        </div>
     </main>
 </body>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
     const bookList = document.getElementById('bookList');
 
-    bookList.addEventListener('wheel', function(event) {
+    bookList.addEventListener('wheel', function (event) {
         if (event.deltaY > 0) {
             behavior: "smooth"
             bookList.scrollLeft += 50;
@@ -174,4 +227,36 @@ if ($result_count_books_read->num_rows > 0) {
             bookList.scrollLeft -= 50;
         }
     });
-</script>   
+
+    // Function to handle delete book AJAX request
+    let bookIdToDelete;
+
+        $(document).on('click', '.delete-book', function() {
+            bookIdToDelete = $(this).data('bookid');
+            $('#deleteModal').modal('show');
+        });
+
+        $('#confirmDeleteButton').on('click', function() {
+            $.ajax({
+                type: 'POST',
+                url: 'profile.php',
+                data: { book_id: bookIdToDelete },
+                success: function(response) {
+            try {
+                let jsonResponse = JSON.parse(response);
+                if (jsonResponse.success) {
+                    location.reload();
+                } else {
+                    alert('Error deleting book: ' + (jsonResponse.message || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Error parsing response: ' + e.message);
+            }
+        },
+                error: function() {
+                    alert('An error occurred while deleting the book.');
+                }
+            });
+        });
+
+</script>
