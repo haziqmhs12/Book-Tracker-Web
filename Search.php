@@ -90,11 +90,11 @@ if (!isset($_SESSION['user'])) {
                         <a class="nav-link" href="profile.php">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
+                            <a class="nav-link" aria-current="page" href="Entry.php">Add Book</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
                 </ul>
                 <!-- <form class="d-flex" role="search">
                     <input class="form-control me-2" id="title" type="search" placeholder="Search" aria-label="Search">
@@ -147,9 +147,12 @@ if (!isset($_SESSION['user'])) {
             <div class="mb-3 ">
                 <form class="d-flex flex-column ">
                     <label for="title" class="form-label">Book Title</label>
-                    <input type="search" class="form-control me-2 mb-3" id="title" aria-label="Search">
+                    <input type="search" class="form-control me-2 mb-3" id="title" aria-label="Search" placeholder="Doraemon">
                     <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
-                    <button class="btn btn-outline-success fetchBtn" type="submit">Search</button>
+                     <div class="d-grid gap-2 d-md-block mx-auto ">
+                    <button class="btn btn-success fetchBtn  btn-block" type="submit">Search</button>
+                    <button class="btn btn-primary  btn-block" type="button" onclick=" window.location.href = 'Entry.php';" >Add Manualy</button>
+                    </div>
                 </form>
             </div>
 

@@ -1,0 +1,144 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #64ccc5;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Center items vertically */
+  height: 100vh;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 20px; /* Add margin to separate from the form */
+}
+
+.contact-header h1 {
+  font-family: "Philosopher", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.contact-header h2 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 20px; /* Adjust letter spacing as needed */
+}
+.contact-form {
+  background-color: #05364e;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.contact-form h2,
+.contact-form h1 {
+  color: #c75d7b;
+  margin-bottom: 0;
+}
+
+.contact-form h1 {
+  color: #344055;
+  margin-top: 0;
+}
+
+.form-container {
+  flex: 1;
+  padding-right: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input,
+textarea {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button {
+  background-color: #176b87;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 20px; /* Adjust letter spacing as needed */
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+button:hover {
+  background-color: #39a5c9;
+}
+
+.contact-details {
+  width: 35%;
+  background-color: #f9f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.contact-details p {
+  margin: 0;
+  margin-bottom: 20px;
+  color: #344055;
+}
+
+.social-media p {
+  margin-bottom: 10px;
+  color: #344055;
+}
+
+.social-media a img {
+  width: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+select {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  background-color: #fff; /* Background color */
+  color: #344055; /* Text color */
+}
+
+select:focus {
+  outline: none;
+  border-color: #176b87; /* Border color when focused */
+}
+
+option {
+  background-color: #fff; /* Background color */
+  color: #344055; /* Text color */
+}

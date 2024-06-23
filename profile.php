@@ -175,10 +175,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating']) && isset($_
                             <a class="nav-link active" aria-current="page" href="#">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="logout.php">Logout</a>
+                            <a class="nav-link" aria-current="page" href="Entry.php">Add Book</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                            <a class="nav-link" href="logout.php">Logout</a>
                         </li>
                     </ul>
                     <!-- <form class="d-flex" role="search">
