@@ -289,13 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
               return response.json(); // Parse the JSON response
             })
             .then((jsonResponse) => {
-              if (response.status === 400) {
-                throw new Error(jsonResponse.error || "Invalid input data.");
-              } else if (response.status === 500) {
-                throw new Error(
-                  "Internal Server Error: " + jsonResponse.error ||
-                    "Unknown error."
-                );
+              if (jsonResponse.error) {
+                throw new Error(jsonResponse.error);
               }
 
               // If no errors, proceed with success handling
@@ -304,8 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
               addButton.innerText = "Added";
             })
             .catch((error) => {
-              console.error("Error:", error);
-              alert("Error: " + error.message);
+                console.error("Error:", error);
               // Enable the button and reset text in case of an error
               addButton.disabled = false;
               addButton.innerText = "Read";

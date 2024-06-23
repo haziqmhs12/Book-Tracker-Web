@@ -15,16 +15,10 @@ if (empty($data['title']) || empty($data['authors']) || empty($data['imageSrc'])
     echo json_encode(array('error' => 'Invalid input data'));
     exit(); // Stop further execution
 }
-$conn = new mysqli("localhost", "root", "", "login_system");
-
-// Check connection
-if ($conn->connect_error) {
-    http_response_code(500);
-    die(json_encode(array('error' => 'Connection failed: ' . $conn->connect_error)));
-}
+include 'config.php'; // Include database connection
 
 // Check if the book already exists in the books table
-$stmt_check = $conn->prepare("SELECT id FROM books WHERE title = ? AND authors = ?");
+$stmt_check = $mysqli->prepare("SELECT id FROM books WHERE title = ? AND authors = ?");
 $stmt_check->bind_param("ss", $data['title'], $data['authors']);
 $stmt_check->execute();
 $stmt_check->store_result();
@@ -35,7 +29,7 @@ if ($stmt_check->num_rows > 0) {
     $stmt_check->fetch();
 } else {
     // Book doesn't exist, insert it into books table
-    $stmt_insert_book = $conn->prepare("INSERT INTO books (title, authors, image_url) VALUES (?, ?, ?)");
+    $stmt_insert_book = $mysqli->prepare("INSERT INTO books (title, authors, image_url) VALUES (?, ?, ?)");
     $stmt_insert_book->bind_param("sss", $data['title'], $data['authors'], $data['imageSrc']);
     $stmt_insert_book->execute();
 
@@ -47,17 +41,18 @@ if ($stmt_check->num_rows > 0) {
 }
 
 // Insert into user_books table
-$stmt_insert_user_book = $conn->prepare("INSERT INTO user_books (summary,rating,book_id, user_id) VALUES (?,?,?, ?)");
+$stmt_insert_user_book = $mysqli->prepare("INSERT INTO user_books (summary,rating,book_id, user_id) VALUES (?,?,?, ?)");
 $stmt_insert_user_book->bind_param("siii",$data['summary'] ,$data['rating'] ,$bookId, $data['userID']);
 
 if ($stmt_insert_user_book->execute()) {
     echo json_encode(array('message' => 'Data added successfully'));
 } else {
+    http_response_code(500);
     echo json_encode(array('error' => 'Execute failed: ' . $stmt_insert_user_book->error));
 }
 
 // Close connections
 $stmt_check->close();
 $stmt_insert_user_book->close();
-$conn->close();
+$mysqli->close();
 ?>

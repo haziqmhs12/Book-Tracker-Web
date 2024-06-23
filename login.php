@@ -6,12 +6,7 @@ if (isset($_POST['login'])) {
     //header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self';");
 
     // Connect to the database
-    $mysqli = new mysqli("localhost", "root", "", "login_system");
-
-    // Check for connection errors
-    if ($mysqli->connect_error) {
-        die("Connection failed: " . $mysqli->connect_error);
-    }
+    include 'config.php'; // Include database connection
 
     // Get the form data and sanitize input to prevent SQL injection and XSS
     $username = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
